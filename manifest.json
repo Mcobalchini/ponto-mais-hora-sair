@@ -1,0 +1,33 @@
+{
+  "name": "Hora sair - Ponto Mais Web",
+  "version": "2.0",
+  "description": "Extensão para calcular a hora que pode sair baseado nos pontos do ponto mais web.",
+  "permissions": [
+    "declarativeContent",
+    "tabs",
+    "activeTab",
+    "*://*.pontomaisweb.com.br/*"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "content_scripts": [
+    {
+      "matches": ["*://*.pontomaisweb.com.br/*"],
+      "js": ["content-page.js"]
+    }
+],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "browser_action": {},
+
+  "icons": {
+    "16": "images/favicon.png",
+    "32": "images/favicon.png",
+    "48": "images/favicon.png",
+    "128": "images/favicon.png"
+  },
+  "manifest_version": 2
+}
