@@ -1,3 +1,5 @@
+
+let imgSrc = chrome.runtime.getURL("images/loading.gif");
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 	let response = null;
@@ -25,7 +27,25 @@ function calcularSaida(calculateOnly) {
 			if (document.getElementById("idemPotencia") == null) {
 				let div = document.createElement("div");
 				div.setAttribute("id", "idemPotencia");
-				div.setAttribute("style", "width: 100%;height: 102%;position: absolute;z-index: 10000;float: left;background: #cececeb0;margin-top: -2%;display:none");
+				div.setAttribute("style", "width: 100%;height: 102%;position: absolute;z-index: 10000;float: left;background: #50505087;margin-top: -2%;display:none");
+
+				let table = document.createElement("table");
+				table.setAttribute("height", "100%");
+				table.setAttribute("width", "100%");
+
+				let tr = document.createElement("tr");
+				let td = document.createElement("td");
+				td.setAttribute("align", "center");
+
+				let img = document.createElement("img");
+				img.setAttribute("src", imgSrc)
+				img.setAttribute("style", "max-width: 60px;");
+
+				td.appendChild(img);
+				tr.appendChild(td);
+				table.appendChild(tr);
+				div.appendChild(table);
+
 				document.querySelector('body').appendChild(div);
 			}
 
@@ -89,6 +109,3 @@ function performCalculation() {
 
 	return dateRetorno
 }
-
-
-
