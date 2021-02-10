@@ -22,7 +22,7 @@
     "persistent": false
   },
   "browser_action": {},
-
+  "web_accessible_resources": ["images/loading.gif"],
   "icons": {
     "16": "images/favicon.png",
     "32": "images/favicon.png",
