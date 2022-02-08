@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 		|| (document.querySelector('.dx-row.dx-data-row.dx-row-lines') != null && version === 'v2')
 	) {
 		let response = null;
-		response = calcularSaida(request.command === 'calculateOnly', version);
+		response = performActions(request.command === 'evaluateOnly', version);
 
 		if (response.complete) {
 			sendResponse({ result: `` });
@@ -24,15 +24,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	}
 });
 
-function calcularSaida(calculateOnly, version) {
+function performActions(evaluateOnly, version) {
 
 	try {
-		if (!calculateOnly) {
+		if (!evaluateOnly) {
 			createIdempotent();
 		}
 
-		getEntriesFromDOM(version);
+		const entries = getEntriesFromDOM(version);
 
+		if (entries != null) {
+			const shiftEndHour = calculate(entries.arrivalTime, entries.departureTime, entries.secondArrivalTime);
+			fillDOM(shiftEndHour, entries.modal);	
+		}
+	
 		return { 'complete': true };
 	} catch (e) {
 		return { 'complete': false };
@@ -40,10 +45,28 @@ function calcularSaida(calculateOnly, version) {
 
 }
 
+function calculate(arrivalTime, departureTime, secondArrivalTime) {
+	const arrivalDate = splitDate(arrivalTime);
+	const departureDate = splitDate(departureTime);
+	let secondArrivalDate = splitDate(secondArrivalTime);
+	var morningHour = departureDate.getTime() - arrivalDate.getTime();
+	var millisecondToFinish = (28800000 - morningHour);
+	secondArrivalDate.setTime(secondArrivalDate.getTime() + millisecondToFinish);
+	return secondArrivalDate
+}
+
+function splitDate(time) {
+	const date = new Date();
+	date.setHours(time.split(':')[0]);
+	date.setMinutes(time.split(':')[1]);
+	date.setSeconds(0);
+	return date
+}
+
 function createIdempotent() {
-	if (document.getElementById('idemPotencia') == null) {
+	if (document.getElementById('idemPotent') == null) {
 		let div = document.createElement('div');
-		div.setAttribute('id', 'idemPotencia');
+		div.setAttribute('id', 'idemPotent');
 		div.setAttribute('style', 'width: 100%;height: 100vh;position: absolute;z-index: 999999;float: left;background: #50505087;margin-top: -2%;display:none');
 
 		let table = document.createElement('table');
@@ -66,12 +89,12 @@ function createIdempotent() {
 		document.querySelector('body').appendChild(div);
 	}
 
-	document.querySelector('#idemPotencia').style.display = '';
+	document.querySelector('#idemPotent').style.display = '';
 }
 
 function getEntriesFromDOM(version) {
 	let modal = '';
-	let horaChegada, horaSaida, horaRetorno;
+	let arrivalTime, departureTime, secondArrivalTime;
 	let hourElements, hourContainer;
 
 	if (version === 'v2') {
@@ -95,19 +118,20 @@ function getEntriesFromDOM(version) {
 	}
 
 	if (document.querySelector(hourContainer) != null) {
-		[horaChegada, horaSaida, horaRetorno] =
+		[arrivalTime, departureTime, secondArrivalTime] =
 			Array.from(modal.querySelectorAll(hourElements))
 				.map(it => it.innerText.match(/([0-9])*:\w+/g, '')[0]);
 	} else {
 		throw new Error();
 	}
 
-	if (horaChegada && horaSaida && horaRetorno) {
-		incrementDOM({
-			horaChegada,
-			horaSaida,
-			horaRetorno
-		}, modal)
+	if (arrivalTime && departureTime && secondArrivalTime) {
+		return {
+				arrivalTime,
+				departureTime,
+				secondArrivalTime,
+				modal
+			}
 	} else {
 		hideIdemPotent();
 		closePopUp(version);
@@ -128,48 +152,24 @@ function closePopUp(version) {
 
 
 function hideIdemPotent() {
-	if (document.getElementById('idemPotencia') != null) {
-		document.querySelector('#idemPotencia').style.display = 'none';
+	if (document.getElementById('idemPotent') != null) {
+		document.querySelector('#idemPotent').style.display = 'none';
 	}
 }
 
 function createLabel(text, modal) {
-	let label = document.getElementById('labelHora');
+	let label = document.getElementById('hourLabel');
 	if (label == null) {
 		label = document.createElement('label');
-		label.setAttribute('id', 'labelHora');
+		label.setAttribute('id', 'hourLabel');
 		label.setAttribute('class', 'col-6');
 		label.setAttribute('style', 'float: left');
 	}
-
 	label.innerText = text;
 	modal.querySelector('.modal-footer').appendChild(label);
 }
 
-function incrementDOM(hours, modal) {
-	const dateRetorno = calculate(hours.horaChegada, hours.horaSaida, hours.horaRetorno);
-	createLabel(`Você pode sair ás ${dateRetorno.toLocaleTimeString()}`, modal);
+function fillDOM(shiftEndHour, modal) {	
+	createLabel(`Você pode sair ás ${shiftEndHour.toLocaleTimeString()}`, modal);
 	hideIdemPotent();
-}
-
-function calculate(horaChegada, horaSaida, horaRetorno) {
-	const dateChegada = new Date();
-	dateChegada.setHours(horaChegada.split(':')[0]);
-	dateChegada.setMinutes(horaChegada.split(':')[1]);
-	dateChegada.setSeconds(0);
-
-	const dateSaida = new Date();
-	dateSaida.setHours(horaSaida.split(':')[0]);
-	dateSaida.setMinutes(horaSaida.split(':')[1]);
-	dateSaida.setSeconds(0);
-
-	let dateRetorno = new Date();
-	dateRetorno.setHours(horaRetorno.split(':')[0]);
-	dateRetorno.setMinutes(horaRetorno.split(':')[1]);
-	dateRetorno.setSeconds(0);
-
-	var horaManha = dateSaida.getTime() - dateChegada.getTime();
-	var millisecondToFinish = (28800000 - horaManha);
-	dateRetorno.setTime(dateRetorno.getTime() + millisecondToFinish);
-	return dateRetorno
 }

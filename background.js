@@ -21,13 +21,13 @@ chrome.runtime.onInstalled.addListener(function () {
 chrome.browserAction.onClicked.addListener(function (tab) {
   if (urls.includes(tab.url)) {
     const version = tab.url === appV1 ? 'v1' : 'v2';
-    chrome.tabs.sendMessage(tab.id, { command: 'calcularSaida', "version": version }, function (response) {
+    chrome.tabs.sendMessage(tab.id, { command: 'performFullAction', "version": version }, function (response) {
 
       if (response?.result === 'recalculate') {
 
         var now = new Date().getTime();
         while (new Date().getTime() < now + 1000) { }
-        chrome.tabs.sendMessage(tab.id, { command: 'calculateOnly', "version": version });
+        chrome.tabs.sendMessage(tab.id, { command: 'evaluateOnly', "version": version });
       }
     });
   }
