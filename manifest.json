@@ -6,13 +6,16 @@
     "declarativeContent",
     "tabs",
     "activeTab",
-    "*://*.pontomaisweb.com.br/*"
+    "*://*.pontomaisweb/*",
+    "*://*.pontomais/*"
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "content_scripts": [
     {
-      "matches": ["*://*.pontomaisweb.com.br/*"],
-      "js": ["content-page.js"]
+      "matches": ["*://*.pontomaisweb.com.br/*", "*://*.pontomais.com.br/*"],
+      "js": [
+        "sweetalert2.all.min.js",
+        "content-page.js"]
     }
 ],
   "background": {
@@ -22,7 +25,7 @@
     "persistent": false
   },
   "browser_action": {},
-  "web_accessible_resources": ["images/loading.gif"],
+  "web_accessible_resources": ["https://cdn.jsdelivr.net/npm/sweetalert2@11.4.0/dist/sweetalert2.all.min.js","images/loading.gif"],
   "icons": {
     "16": "images/favicon.png",
     "32": "images/favicon.png",
