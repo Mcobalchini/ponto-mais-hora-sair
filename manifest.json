@@ -1,6 +1,6 @@
 {
   "name": "Hora sair - Ponto Mais Web",
-  "version": "2.0",
+  "version": "2.1",
   "description": "Extensão para calcular a hora que pode sair baseado nos pontos do ponto mais web.",
   "permissions": [
     "declarativeContent",

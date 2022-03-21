@@ -101,8 +101,8 @@ function getEntriesFromDOM(version) {
 		hourElements = '.col.cont.hour';
 		hourContainer = `.modal-dialog.modal-lg.modal-dialog-scrollable ${hourElements}`;
 		if (document.querySelector(hourContainer) == null) {
-			document.querySelector('dx-drop-down-button div div div').click();
-			document.querySelector('.dx-item-content.dx-list-item-content').click();
+			document.querySelector('.pm-icon-arrow-outline-down').click();
+			document.querySelector('.pm-dropdown-options .ng-star-inserted').click();
 		}
 
 		modal = document.querySelector('.modal-dialog.modal-lg.modal-dialog-scrollable');
