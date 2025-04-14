@@ -22,6 +22,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			confirmButtonText: 'Entendi'
 		});
 	}
+	// Return true to indicate we'll send a response asynchronously
+	return true;
 });
 
 function performActions(evaluateOnly, version) {
@@ -35,9 +37,9 @@ function performActions(evaluateOnly, version) {
 
 		if (entries != null) {
 			const shiftEndHour = calculate(entries.arrivalTime, entries.departureTime, entries.secondArrivalTime);
-			fillDOM(shiftEndHour, entries.modal);	
+			fillDOM(shiftEndHour, entries.modal);
 		}
-	
+
 		return { 'complete': true };
 	} catch (e) {
 		return { 'complete': false };
@@ -102,7 +104,7 @@ function getEntriesFromDOM(version) {
 		hourContainer = `.modal-dialog.modal-lg.modal-dialog-scrollable ${hourElements}`;
 		if (document.querySelector(hourContainer) == null) {
 			document.querySelector('.pm-icon-arrow-outline-down').click();
-			document.querySelector('.pm-dropdown-options .ng-star-inserted').click();
+			document.querySelector('body > .pm-dropdown-options .ng-star-inserted').click();
 		}
 
 		modal = document.querySelector('.modal-dialog.modal-lg.modal-dialog-scrollable');
@@ -127,11 +129,11 @@ function getEntriesFromDOM(version) {
 
 	if (arrivalTime && departureTime && secondArrivalTime) {
 		return {
-				arrivalTime,
-				departureTime,
-				secondArrivalTime,
-				modal
-			}
+			arrivalTime,
+			departureTime,
+			secondArrivalTime,
+			modal
+		}
 	} else {
 		hideIdemPotent();
 		closePopUp(version);
@@ -143,7 +145,7 @@ function getEntriesFromDOM(version) {
 		});
 	}
 }
-			
+
 function closePopUp(version) {
 	const clazz = version === 'v1' ? '.close' : '.dimiss';
 	if (document.querySelector(clazz))
@@ -169,7 +171,7 @@ function createLabel(text, modal) {
 	modal.querySelector('.modal-footer').appendChild(label);
 }
 
-function fillDOM(shiftEndHour, modal) {	
+function fillDOM(shiftEndHour, modal) {
 	createLabel(`Você pode sair ás ${shiftEndHour.toLocaleTimeString()}`, modal);
 	hideIdemPotent();
 }

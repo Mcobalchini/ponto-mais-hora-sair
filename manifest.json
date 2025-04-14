@@ -1,36 +1,39 @@
 {
   "name": "Hora sair - Ponto Mais Web",
-  "version": "2.1",
+  "version": "2.2",
   "description": "Extensão para calcular a hora que pode sair baseado nos pontos do ponto mais web.",
   "permissions": [
-    "declarativeContent",
-    "tabs",
     "activeTab",
-    "*://*.pontomaisweb/*",
-    "*://*.pontomais/*"
+    "tabs",
+    "scripting",
+    "declarativeContent"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "host_permissions": [
+    "*://*.pontomaisweb.com.br/*",
+    "*://*.pontomais.com.br/*"
+  ],
   "content_scripts": [
     {
       "matches": ["*://*.pontomaisweb.com.br/*", "*://*.pontomais.com.br/*"],
       "js": [
         "sweetalert2.all.min.js",
-        "content-page.js"]
+        "content-page.js"
+      ]
     }
-],
+  ],
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
+    "service_worker": "background.js"
   },
-  "browser_action": {},
-  "web_accessible_resources": ["https://cdn.jsdelivr.net/npm/sweetalert2@11.4.0/dist/sweetalert2.all.min.js","images/loading.gif"],
+  "action": {},
+  "web_accessible_resources": [{
+    "resources": ["images/loading.gif"],
+    "matches": ["*://*.pontomaisweb.com.br/*", "*://*.pontomais.com.br/*"]
+  }],
   "icons": {
     "16": "images/favicon.png",
     "32": "images/favicon.png",
     "48": "images/favicon.png",
     "128": "images/favicon.png"
   },
-  "manifest_version": 2
+  "manifest_version": 3
 }
